@@ -10,7 +10,7 @@
 
 <pre>
 # Go to project Folder
-cd monitoring
+cd deployment
 </pre>
 
 <pre>
