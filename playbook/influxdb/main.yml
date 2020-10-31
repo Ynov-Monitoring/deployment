@@ -1,0 +1,23 @@
+- name: Install influxDB on debian-based servers
+  hosts: debian_based
+  tasks: 
+    - name: Import InfluxDB GPG public key 
+      apt_key: url=https://repos.influxdata.com/influxdb.key state=present
+    
+    - name: Add InfluxDB repo 
+      apt_repository: 
+        repo: deb https://repos.influxdata.com/ubuntu bionic stable
+        state: present
+        filename: influxdb
+
+    - name: Install InfluxDB packages
+      apt: 
+        name: influxdb
+        state: latest
+        update_cache: yes
+
+    - name : Start the InfluxDB service 
+      service: 
+        name: influxdb
+        state: restarted
+        enabled: yes
