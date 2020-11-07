@@ -1,0 +1,40 @@
+############
+# InfluxDB #
+############
+
+manala_influxdb_databases:
+    - monitoring
+  
+manala_influxdb_users:
+  - database: monitoring
+    name: telegraf_probe
+    password: very_secret
+
+  - database: monitoring
+    name:     grafana
+    password:    read
+  
+manala_influxdb_privileges:
+  - database: monitoring
+    user:     telegraf_probe
+    grant:    write
+  
+  - database: monitoring
+    user:     grafana
+    grant:    read
+    
+    
+manala_influxdb_dir:
+  - /var/lib/influxdb/meta
+  - /var/lib/influxdb/data
+  - /var/lib/influxdb/wal
+  
+manala_influxdb_config:
+  - reporting-disabled: true
+  - meta:
+    - dir: /var/lib/influxdb/meta
+  - data:
+    - dir: /var/lib/influxdb/data
+    - wal-dir: /var/lib/influxdb/wal
+  - udp:
+    - enabled: false

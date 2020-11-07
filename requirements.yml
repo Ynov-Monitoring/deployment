@@ -1,0 +1,4 @@
+roles:
+    - name: manala.influxdb
+      version: 2.0.2
+      
