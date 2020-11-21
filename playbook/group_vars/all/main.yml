@@ -1,0 +1,59 @@
+############
+# MAIN VAR #
+############
+
+influxdb_monitoring_db: "monitoring"
+influxdb_telegraf_user: "telegraf_probe"
+influxdb_telegraf_pass: "very_secret"
+
+
+############
+# TELEGRAF #
+############
+manala_telegraf_config:
+  output:
+   influxdb: 
+    - urls: "[\"{{ groups['influxdb'] | map('extract', hostvars, ['ansible_host']) | join(':8086\",\"') }}\"]" 
+    - database: " {{ influxdb_monitoring_db }} "
+    - username: "{{ influxdb_telegraf_user }}"
+    - password: "{{ influxdb_telegraf_pass }}"
+
+############
+# InfluxDB #
+############
+manala_influxdb_databases:
+    - "{{ influxdb_monitoring_db }}"
+  
+manala_influxdb_users:
+  - database: "{{ influxdb_monitoring_db }}"
+    name: "{{ influxdb_telegraf_user }}"
+    password: "{{ influxdb_telegraf_pass }}"
+
+  - database: "{{ influxdb_monitoring_db }}"
+    name:     grafana
+    password:    read
+  
+manala_influxdb_privileges:
+  - database: "{{ influxdb_monitoring_db }}"
+    user:     "{{ influxdb_telegraf_user }}"
+    grant:    write
+  
+  - database: "{{ influxdb_monitoring_db }}"
+    user:     grafana
+    grant:    read
+    
+    
+manala_influxdb_dir:
+  - /var/lib/influxdb/meta
+  - /var/lib/influxdb/data
+  - /var/lib/influxdb/wal
+  
+manala_influxdb_config:
+  - reporting-disabled: true
+  - meta:
+    - dir: /var/lib/influxdb/meta
+  - data:
+    - dir: /var/lib/influxdb/data
+    - wal-dir: /var/lib/influxdb/wal
+  - udp:
+    - enabled: false
