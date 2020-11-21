@@ -21,3 +21,4 @@
     - influxdb
     - influxdb::install
     - influxdb::config
+    
