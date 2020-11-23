@@ -1,5 +1,20 @@
 - hosts: all
   become: true
+  tasks:
+    - name: Import InfluxDB GPG public key 
+      apt_key: url=https://repos.influxdata.com/influxdb.key state=present
+
+    - name: Add InfluxDB repo 
+      apt_repository: 
+        repo: deb https://repos.influxdata.com/ubuntu bionic stable
+        state: present
+        filename: influxdb
+  tags:
+    - influxdb
+    - influxdb::install
+
+- hosts: all
+  become: true
   roles: 
     - manala.telegraf
   tags:

@@ -1,4 +1,4 @@
-- hosts: influxdb
+- hosts: all
   become: true
   tasks:
     - name: Import InfluxDB GPG public key 
