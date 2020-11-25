@@ -29,7 +29,7 @@
 - hosts: client
   become: true
   roles: 
-    - manala.telegraf
+    - dj-wasabi.telegraf
   tags:
     - telegraf
     - telegraf::install
