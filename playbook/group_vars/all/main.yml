@@ -1,0 +1,77 @@
+############
+# MAIN VAR #
+############
+
+influxdb_monitoring_db: "monitoring"
+influxdb_telegraf_user: "telegraf_probe"
+influxdb_telegraf_pass: "very_secret"
+
+
+############
+# TELEGRAF #
+############
+# doc: https://github.com/manala/ansible-role-telegraf
+
+manala_telegraf_config:
+  agent:
+    hostname: "{{ ansible_fqdn }}"
+    quiet: false
+    interval: "10s"
+    flush_interval: "10s"
+  outputs:
+   influxdb: 
+    - urls: "[\"http://{{ groups['influxdb'] | map('extract', hostvars, ['ansible_ssh_host']) | join(':8086\",\"http://') }}:8086\"]" 
+      database: "{{ influxdb_monitoring_db }}"
+      username: "{{ influxdb_telegraf_user }}"
+      password: "{{ influxdb_telegraf_pass }}"
+
+manala_telegraf_configs:
+  - file: system.conf
+    template: probes/system.conf.j2
+    config: 
+      cpu: 
+        totalcpu: "true"
+        percpu: "true"
+
+manala_telegraf_configs_exclusive: true # Be sure no old or manually created files will alter current configuration.
+
+
+############
+# InfluxDB #
+############
+# doc : https://github.com/manala/ansible-role-influxdb
+manala_influxdb_databases:
+    - "{{ influxdb_monitoring_db }}"
+  
+manala_influxdb_users:
+  - database: "{{ influxdb_monitoring_db }}"
+    name: "{{ influxdb_telegraf_user }}"
+    password: "{{ influxdb_telegraf_pass }}"
+
+  - database: "{{ influxdb_monitoring_db }}"
+    name:     grafana
+    password:    read
+  
+manala_influxdb_privileges:
+  - database: "{{ influxdb_monitoring_db }}"
+    user:     "{{ influxdb_telegraf_user }}"
+    grant:    write
+  
+  - database: "{{ influxdb_monitoring_db }}"
+    user:     grafana
+    grant:    read
+    
+manala_influxdb_dir:
+  - /var/lib/influxdb/meta
+  - /var/lib/influxdb/data
+  - /var/lib/influxdb/wal
+  
+manala_influxdb_config:
+  - reporting-disabled: true
+  - meta:
+    - dir: /var/lib/influxdb/meta
+  - data:
+    - dir: /var/lib/influxdb/data
+    - wal-dir: /var/lib/influxdb/wal
+  - udp:
+    - enabled: false

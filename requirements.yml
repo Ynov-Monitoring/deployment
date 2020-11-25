@@ -1,4 +1,5 @@
 roles:
     - name: manala.influxdb
       version: 2.0.2
-      
+    - name: manala.telegraf
+      version: 2.0.10

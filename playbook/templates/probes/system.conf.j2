@@ -1,0 +1,23 @@
+{% set config = item.config|default([]) %}
+
+#
+#   SYSTEM PROBE 
+#   
+#   Yday's project
+#   By: DevOps - Monitoring & Alerting 
+#   author: brice.michalski@ynov.com
+#
+
+[[inputs.system]] 
+# doc: https://github.com/influxdata/telegraf/tree/master/plugins/inputs/system
+
+[[inputs.cpu]]
+# doc: https://github.com/influxdata/telegraf/tree/master/plugins/inputs/cpu
+    percpu = {{ config.cpu.percpu }}
+    totalcpu = {{ config.cpu.totalcpu }}
+
+[[inputs.disk]]
+# doc: https://github.com/influxdata/telegraf/tree/master/plugins/inputs/disk
+
+[[inputs.mem]]
+# doc: https://github.com/influxdata/telegraf/tree/master/plugins/inputs/mem
