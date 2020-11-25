@@ -1,4 +1,4 @@
-- hosts: client
+- hosts: test
   become: true
   tasks:
     - name: Import InfluxDB GPG public key (DEBIAN)
@@ -13,7 +13,7 @@
       when: ansible_facts['os_family'] != "RedHat"
 
     # - debug:
-    #     var: ansible_facts
+    #     var: project_tag
     #   when: ansible_facts['os_family'] == "RedHat"
 
     - name: Import InfluxDB GPG public key (REDHAT)
@@ -26,7 +26,7 @@
     - influxdb
     - influxdb::install
 
-- hosts: client
+- hosts: all
   become: true
   roles: 
     - dj-wasabi.telegraf

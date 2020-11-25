@@ -19,7 +19,7 @@ grafana.local
 [influxdb]
 influxdb.local
 
-[client]
+[test]
 centos.local
 debian.local
 ubuntu.local  
