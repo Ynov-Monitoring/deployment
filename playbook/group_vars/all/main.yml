@@ -21,7 +21,7 @@ manala_telegraf_config:
   outputs:
    influxdb: 
     - urls: "[\"http://{{ groups['influxdb'] | map('extract', hostvars, ['ansible_ssh_host']) | join(':8086\",\"http://') }}:8086\"]" 
-      database: " {{ influxdb_monitoring_db }} "
+      database: "{{ influxdb_monitoring_db }}"
       username: "{{ influxdb_telegraf_user }}"
       password: "{{ influxdb_telegraf_pass }}"
 
@@ -60,7 +60,6 @@ manala_influxdb_privileges:
   - database: "{{ influxdb_monitoring_db }}"
     user:     grafana
     grant:    read
-    
     
 manala_influxdb_dir:
   - /var/lib/influxdb/meta

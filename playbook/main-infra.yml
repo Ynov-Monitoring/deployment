@@ -1,3 +1,4 @@
+---
 - hosts: all
   become: true
   tasks:
@@ -22,3 +23,4 @@
     - influxdb::install
     - influxdb::config
     
+- import_playbook: telegraf.yml
