@@ -24,3 +24,5 @@
     - influxdb::config
     
 - import_playbook: telegraf.yml
+
+- import_playbook: install-ansible.yml

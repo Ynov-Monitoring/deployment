@@ -13,7 +13,7 @@
     - influxdb
     - influxdb::install
 
-- hosts: all
+- hosts: client
   become: true
   roles: 
     - manala.telegraf
