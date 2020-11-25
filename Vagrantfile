@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
         master.vm.provider "virtualbox" do |v|
             v.name = "devops-ansible" 
             v.memory = 1024
-            v.cpus = 2
+            v.cpus = 1
         end
     end
 
@@ -35,4 +35,39 @@ Vagrant.configure("2") do |config|
             v.cpus = 2
         end
     end
+
+    ## VM army 
+    config.vm.define "centos-soldier" do |master|
+        master.vm.box = "centos/7"
+        master.vm.network "private_network", ip: "192.168.50.34"
+        master.vm.hostname = "centos-soldier"
+        master.vm.provider "virtualbox" do |v|
+            v.name = "centos-soldier"
+            v.memory = 512
+            v.cpus = 1
+        end
+    end
+
+    config.vm.define "debian-soldier" do |master|
+        master.vm.box = "debian/stretch64"
+        master.vm.network "private_network", ip: "192.168.50.35"
+        master.vm.hostname = "debian-soldier"
+        master.vm.provider "virtualbox" do |v|
+            v.name = "debian-soldier"
+            v.memory = 512
+            v.cpus = 1
+        end
+    end
+
+    config.vm.define "ubuntu-soldier" do |master|
+        master.vm.box = "bento/ubuntu-18.04"
+        master.vm.network "private_network", ip: "192.168.50.36"
+        master.vm.hostname = "ubuntu-soldier"
+        master.vm.provider "virtualbox" do |v|
+            v.name = "ubuntu-soldier"
+            v.memory = 512
+            v.cpus = 1
+        end
+    end
+
 end
