@@ -1,0 +1,13 @@
+# ANSIBLE INSTALL
+# doc: https://github.com/geerlingguy/ansible-role-ansible
+
+- hosts: ansible
+  become: true
+  vars: 
+    ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.ansible
+  tags:
+    - ansible
+    - ansible::install
