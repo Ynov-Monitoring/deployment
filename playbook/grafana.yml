@@ -10,9 +10,14 @@
         repo: deb https://packages.grafana.com/oss/deb stable main
         state: present
         filename: grafana
+      tags:
+      - grafana
+      - grafana::install
 
 - hosts: grafana
   become: true
   roles:
     - manala.grafana
-    
+  tags:
+    - grafana
+    - grafana::setup
