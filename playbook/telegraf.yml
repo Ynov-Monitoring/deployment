@@ -33,4 +33,3 @@
   tags:
     - telegraf
     - telegraf::install
-    - telegraf::config
