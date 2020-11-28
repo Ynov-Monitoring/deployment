@@ -8,6 +8,10 @@ influxdb_monitoring_db: "monitoring"
 influxdb_telegraf_user: "telegraf_probe"
 influxdb_telegraf_pass: "very_secret"
 
+influxdb_grafana_user: "grafana"
+influxdb_grafana_pass: "very_secret"
+
+
 
 ############
 # TELEGRAF #
@@ -33,7 +37,7 @@ telegraf_global_tags:
 telegraf_agent_output:
   - type: influxdb
     config:
-      - urls = ["http://{{ groups['influxdb'] | map('extract', hostvars, ['ansible_ssh_host']) | join(':8086\",\"http://') }}:8086"]
+      - urls = ["http://{{ influxdb_ip }}:8086"]
       - database = "{{ influxdb_monitoring_db }}"
       - username = "{{ influxdb_telegraf_user }}"
       - password = "{{ influxdb_telegraf_pass }}"

@@ -1,5 +1,6 @@
 project_tag: devops-monitoring
 
+influx_ip: "{{ groups['influxdb'] | map('extract', hostvars, ['ansible_ssh_host']) | join(':8086\",\"http://') }}"
 ######################
 #      ANSIBLE       #
 ######################
@@ -23,8 +24,8 @@ manala_influxdb_users:
     password: "{{ influxdb_telegraf_pass }}"
 
   - database: "{{ influxdb_monitoring_db }}"
-    name: grafana
-    password: read
+    name: "{{ influxdb_grafana_user }}"
+    password: "{{ influxdb_grafana_pass }}"
 
 manala_influxdb_privileges:
   - database: "{{ influxdb_monitoring_db }}"
@@ -32,7 +33,7 @@ manala_influxdb_privileges:
     grant: write
 
   - database: "{{ influxdb_monitoring_db }}"
-    user: grafana
+    user: "{{ influxdb_grafana_user }}"
     grant: read
 
 manala_influxdb_dir:
@@ -49,3 +50,30 @@ manala_influxdb_config:
     - wal-dir: /var/lib/influxdb/wal
   - udp:
     - enabled: false
+
+#############
+#  Grafana  #
+#############
+
+manala_grafana_config:
+  - app_mode: production
+  - server:
+      - http_port: 3000
+  - security:
+      - admin_user: admin
+      - admin_password: admin
+
+manala_grafana_api_url: http://127.0.0.1:3000
+manala_grafana_api_user: admin
+manala_grafana_api_password: admin
+
+manala_grafana_datasources:
+  - name:      telegraf
+    type:      influxdb
+    isDefault: true
+    access:    server
+    basicAuth: true
+    url:       "http://{{ influx_ip }}:8086"
+    database:  "{{ influxdb_monitoring_db }}"
+    username:  "{{ influxdb_grafana_user }}"
+    password:  "{{ influxdb_grafana_pass }}"

@@ -1,1 +1,3 @@
 project_tag: project_local
+
+influxdb_ip: 192.168.50.32
