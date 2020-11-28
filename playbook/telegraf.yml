@@ -12,11 +12,7 @@
         filename: influxdb
       when: ansible_facts['os_family'] != "RedHat"
 
-    # - debug:
-    #     var: project_tag
-    #   when: ansible_facts['os_family'] == "RedHat"
-
-    - name: Import InfluxDB GPG public key (REDHAT)
+    - name: Import InfluxDB GPG public key (REDHAT)<
       rpm_key:
         state: present
         key: https://repos.influxdata.com/influxdb.key

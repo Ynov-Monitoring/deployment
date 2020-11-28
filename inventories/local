@@ -3,6 +3,9 @@ grafana.local       ansible_ssh_host=192.168.50.33     ansible_ssh_user=vagrant 
 influxdb.local      ansible_ssh_host=192.168.50.32     ansible_ssh_user=vagrant     ansible_ssh_password=vagrant
 
 [main:children]
+local
+
+[local:children]
 ansible
 grafana
 influxdb
