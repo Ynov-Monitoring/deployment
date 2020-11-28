@@ -1,5 +1,7 @@
 # MONITORING project - ansible project
 
+![GitHub Super-Linter](https://github.com/Ynov-Monitoring/deployment/workflows/Continuous%20Integration/badge.svg)
+
 ## Installation
 
 - [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
