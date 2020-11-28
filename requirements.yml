@@ -7,7 +7,6 @@ roles:
 
     - name: manala.influxdb
       version: 2.0.2
-    #- name: manala.telegraf
-    #  version: 2.0.10
+      
     - name: dj-wasabi.telegraf
       version: 0.13.0

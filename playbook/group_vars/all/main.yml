@@ -7,7 +7,6 @@
 influxdb_monitoring_db: "monitoring"
 influxdb_telegraf_user: "telegraf_probe"
 influxdb_telegraf_pass: "very_secret"
-ansible_nodename: "REPLACE_ME"
 
 ############
 # TELEGRAF #

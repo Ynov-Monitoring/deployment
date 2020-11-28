@@ -1,4 +1,4 @@
-- hosts: test
+- hosts: all:!main
   become: true
   tasks:
     - name: Import InfluxDB GPG public key (DEBIAN)
