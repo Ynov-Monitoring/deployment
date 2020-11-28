@@ -42,5 +42,7 @@
     - influxdb
     - influxdb::install
     - influxdb::config
-
+    
 - import_playbook: telegraf.yml
+
+- import_playbook: grafana.yml
