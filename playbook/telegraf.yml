@@ -1,4 +1,4 @@
-- hosts: client
+- hosts: all:!main
   become: true
   tasks:
     - name: Import InfluxDB GPG public key (DEBIAN)
@@ -12,11 +12,7 @@
         filename: influxdb
       when: ansible_facts['os_family'] != "RedHat"
 
-    # - debug:
-    #     var: ansible_facts
-    #   when: ansible_facts['os_family'] == "RedHat"
-
-    - name: Import InfluxDB GPG public key (REDHAT)
+    - name: Import InfluxDB GPG public key (REDHAT)<
       rpm_key:
         state: present
         key: https://repos.influxdata.com/influxdb.key
@@ -26,11 +22,10 @@
     - influxdb
     - influxdb::install
 
-- hosts: client
+- hosts: all
   become: true
   roles: 
-    - manala.telegraf
+    - dj-wasabi.telegraf
   tags:
     - telegraf
     - telegraf::install
-    - telegraf::config
