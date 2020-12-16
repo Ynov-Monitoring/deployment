@@ -1,0 +1,15 @@
+project_tag: project_local
+
+influxdb_monitoring_db: "monitoring"
+influxdb_telegraf_user: "telegraf_probe"
+influxdb_telegraf_pass: "very_secret"
+
+influxdb_grafana_user: "grafana"
+influxdb_grafana_pass: "very_secret"
+
+grafana_admin: admin
+grafana_admin_pass: adminpass
+grafana_api_usr: api_usr
+grafana_api_pwd: api_usr_pwd
+
+influxdb_ip: 192.168.50.32

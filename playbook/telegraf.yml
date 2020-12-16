@@ -1,0 +1,31 @@
+- hosts: all:!main
+  become: true
+  tasks:
+    - name: Import InfluxDB GPG public key (DEBIAN)
+      apt_key: url=https://repos.influxdata.com/influxdb.key state=present
+      when: ansible_facts['os_family'] != "RedHat"
+
+    - name: Add InfluxDB repo (DEBIAN)
+      apt_repository: 
+        repo: "deb https://repos.influxdata.com/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['distribution_release'] | lower}} stable"
+        state: present
+        filename: influxdb
+      when: ansible_facts['os_family'] != "RedHat"
+
+    - name: Import InfluxDB GPG public key (REDHAT)<
+      rpm_key:
+        state: present
+        key: https://repos.influxdata.com/influxdb.key
+      when: ansible_facts['os_family'] == "RedHat"
+
+  tags:
+    - influxdb
+    - influxdb::install
+
+- hosts: all
+  become: true
+  roles: 
+    - dj-wasabi.telegraf
+  tags:
+    - telegraf
+    - telegraf::install
