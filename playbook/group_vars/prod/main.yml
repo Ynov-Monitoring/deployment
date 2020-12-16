@@ -1,6 +1,7 @@
 project_tag: devops-monitoring
 
 influxdb_ip: "{{ groups['influxdb'] | map('extract', hostvars, ['ansible_ssh_host']) | join(':8086\",\"http://') }}"
+
 influxdb_grafana_user: !vault |
                        $ANSIBLE_VAULT;1.1;AES256
                        39663333373864633933336662636330306364356330343439623235396331343535643339326166
@@ -87,15 +88,17 @@ grafana_admin_pass: !vault |
                     3961623730313336640a373433323166653936623038383437663963666236623437396166333737
                     61393165326132623535366433363463396264313539633131656131626434383134
 
+grafana_expose_port: 3000
+
 manala_grafana_config:
   - app_mode: production
   - server:
-      - http_port: 3000
+      - http_port: "{{ grafana_expose_port }}"
   - security:
       - admin_user: "{{ grafana_admin }}"
       - admin_password: "{{ grafana_admin_pass }}"
 
-manala_grafana_api_url: http://127.0.0.1:3000
+manala_grafana_api_url: "http://127.0.0.1:{{ grafana_expose_port }}"
 manala_grafana_api_user: "{{ grafana_admin }}"
 manala_grafana_api_password: "{{ grafana_admin_pass }}"
 
@@ -109,3 +112,5 @@ manala_grafana_datasources:
     database:  "{{ influxdb_monitoring_db }}"
     username:  "{{ influxdb_grafana_user }}"
     password:  "{{ influxdb_grafana_pass }}"
+
+grafana_api: "eyJrIjoiVFg2UEl0dVNEMHdaSXNvWHNDdVJZMHdwS29JS0ZTdXAiLCJuIjoidGVzdDIiLCJpZCI6MX0="

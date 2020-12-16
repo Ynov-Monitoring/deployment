@@ -1,0 +1,15 @@
+---
+
+teams:
+  - name: Team1
+    email: text@example.com
+    user:
+    dashboard:
+      - name: "System"
+      - name: "java"
+
+  - name: Team2
+    email: text2@example.com
+    user:
+    dashboard:
+      - name: "System"
