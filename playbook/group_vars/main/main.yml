@@ -66,6 +66,11 @@ manala_influxdb_config:
     - wal-dir: /var/lib/influxdb/wal
   - udp:
     - enabled: false
+  - retention:
+    - check-interval: "1m"
+  - continuous_queries:
+    - enabled: true
+    - run-interval: 1m
 
 #############
 #  Grafana  #

@@ -1,0 +1,4 @@
+- name: Test Select
+  uri:
+    url: "http://localhost:8086/query?db=monitoring&{{ 'q=SELECT * FROM cpu LIMIT 1' | urlencode }}"
+    method: GETOuai

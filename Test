@@ -1,0 +1,7 @@
+
+# Query par défaut
+CREATE RETENTION POLICY "1_month" ON "monitoring" DURATION 1h REPLICATION 1 DEFAULT
+
+CREATE RETENTION POLICY "6_month" ON "monitoring" DURATION 1h REPLICATION 1
+
+CREATE CONTINUOUS QUERY "Agregation per minute" ON "monitoring" RESAMPLE EVERY 1h BEGIN SELECT mean(*) INTO "R2"."cpu" FROM "cpu" GROUP BY time(1h),* END

@@ -38,6 +38,7 @@
   become: true
   roles: 
     - manala.influxdb
+    - influxDB-retention-policy
   tags:
     - influxdb
     - influxdb::install
