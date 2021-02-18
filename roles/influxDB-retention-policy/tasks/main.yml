@@ -1,4 +1,37 @@
-- name: Test Select
+# Politique de retention de données
+- name: Création Retention Policy 1 heure
   uri:
-    url: "http://localhost:8086/query?db=monitoring&{{ 'q=SELECT * FROM cpu LIMIT 1' | urlencode }}"
-    method: GETOuai
+    url: "{{ URLQuery }}"
+    method: POST
+    body_format: "form-urlencoded"
+    body: "{{ RP1hour }}"
+
+- name: Création Retention Policy 6 heures
+  uri:
+    url: "{{ URLQuery }}"
+    method: POST
+    body_format: "form-urlencoded"
+    body: "{{ RP6hour }}"
+
+- name: Création Retention Policy 10 heures
+  uri:
+    url: "{{ URLQuery }}"
+    method: POST
+    body_format: "form-urlencoded"
+    body: "{{ RP10hour }}"
+
+# Continuous query
+
+- name: Création Continuous Query 10sec to 1 min
+  uri:
+    url: "{{ URLQuery }}"
+    method: POST
+    body_format: "form-urlencoded"
+    body: "{{ CQ10sTo1min }}"
+
+- name: Création Continuous Query 10sec to 1 min
+  uri:
+    url: "{{ URLQuery }}"
+    method: POST
+    body_format: "form-urlencoded"
+    body: "{{ CQ1minTo10min }}"

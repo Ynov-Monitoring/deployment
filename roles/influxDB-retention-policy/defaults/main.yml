@@ -1,3 +1,19 @@
+URLQuery: "http://localhost:8086/query?db=monitoring&"
 
+# CREATE CONTINUOUS QUERY DeleteData ON monitoring 
+#   BEGIN 
+#     DROP SERIES 
+#     FROM "cpu" 
+#     WHERE ((SELECT LAST(mean_usage_system) from RP6hour.cpu1mi)>=(SELECT LAST(usage_system) from cpu))  
+#   END
 
-    
+# Retention Policy Requests
+
+RP1hour: "q=CREATE RETENTION POLICY RP1hour ON monitoring DURATION 1h REPLICATION 1 DEFAULT"
+RP6hour: "q=CREATE RETENTION POLICY RP6hour ON monitoring DURATION 75m REPLICATION 1"
+RP10hour: "q=CREATE RETENTION POLICY RP10hour ON monitoring DURATION 90m REPLICATION 1"
+
+# Continuous Queries Requests
+
+CQ10sTo1min: "q=CREATE CONTINUOUS QUERY CQ10sTo1min on monitoring BEGIN SELECT mean(*) INTO RP6hour.cpu1min FROM cpu GROUP BY time(1m) END"
+CQ1minTo10min: "q=CREATE CONTINUOUS QUERY CQ1minTo10min on monitoring BEGIN SELECT mean(*) INTO RP10hour.cpu10min FROM RP6hour.cpu1min GROUP BY time(10m) END"
