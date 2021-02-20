@@ -1,37 +1,22 @@
 # Politique de retention de données
-- name: Création Retention Policy 1 heure
+- name: Création Retention Policy 
   uri:
     url: "{{ URLQuery }}"
     method: POST
     body_format: "form-urlencoded"
-    body: "{{ RP1hour }}"
+    body: "{{ item.query }}"
+  with_items: "{{ retention_policies }}"
+  register: response
 
-- name: Création Retention Policy 6 heures
+- name: Création Continuous Query 
   uri:
     url: "{{ URLQuery }}"
     method: POST
     body_format: "form-urlencoded"
-    body: "{{ RP6hour }}"
-
-- name: Création Retention Policy 10 heures
-  uri:
-    url: "{{ URLQuery }}"
-    method: POST
-    body_format: "form-urlencoded"
-    body: "{{ RP10hour }}"
-
-# Continuous query
-
-- name: Création Continuous Query 10sec to 1 min
-  uri:
-    url: "{{ URLQuery }}"
-    method: POST
-    body_format: "form-urlencoded"
-    body: "{{ CQ10sTo1min }}"
-
-- name: Création Continuous Query 10sec to 1 min
-  uri:
-    url: "{{ URLQuery }}"
-    method: POST
-    body_format: "form-urlencoded"
-    body: "{{ CQ1minTo10min }}"
+    body: "{{ item.query }}"
+  with_items: "{{ continuous_queries }}"
+  register: response2
+  
+# - name: "Debug"
+#   debug:
+#     var: response2
