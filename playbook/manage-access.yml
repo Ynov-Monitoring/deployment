@@ -1,0 +1,4 @@
+- hosts: grafana
+  become: true
+  roles:
+    - role: teams-management

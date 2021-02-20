@@ -13,3 +13,8 @@ roles:
  
     - name: manala.grafana
       version: 2.0.2
+
+# - src: https://XXXXX/springboot.git
+#   scm: git
+#   name: external_roles/springboot_tools
+#   version: '1.9.0'
