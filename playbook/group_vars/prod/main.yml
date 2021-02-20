@@ -112,5 +112,3 @@ manala_grafana_datasources:
     database:  "{{ influxdb_monitoring_db }}"
     username:  "{{ influxdb_grafana_user }}"
     password:  "{{ influxdb_grafana_pass }}"
-
-grafana_api: "eyJrIjoiVFg2UEl0dVNEMHdaSXNvWHNDdVJZMHdwS29JS0ZTdXAiLCJuIjoidGVzdDIiLCJpZCI6MX0="
