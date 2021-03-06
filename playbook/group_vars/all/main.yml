@@ -63,3 +63,7 @@ telegraf_plugins_default:
   - plugin: mem
   - plugin: disk
   - plugin: netstat
+  - plugin: diskio
+  - plugin: processes
+  - plugin: swap
+  

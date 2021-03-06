@@ -3,17 +3,17 @@ URLQuery: "http://localhost:8086/query?db=monitoring&"
 # Retention Policy Requests
 
 retention_policies: 
-  - name: "RP1hour"
-    query: "q=CREATE RETENTION POLICY RP1hour ON monitoring DURATION 1h REPLICATION 1 DEFAULT"
-  - name: "RP6hour"
-    query: "q=CREATE RETENTION POLICY RP6hour ON monitoring DURATION 75m REPLICATION 1"
-  - name: "RP10hour"
-    query: "q=CREATE RETENTION POLICY RP10hour ON monitoring DURATION 90m REPLICATION 1"
+  - name: "RP1month"
+    query: "q=CREATE RETENTION POLICY RP1month ON monitoring DURATION 4w REPLICATION 1 DEFAULT"
+  - name: "RP3month"
+    query: "q=CREATE RETENTION POLICY RP3month ON monitoring DURATION 12w REPLICATION 1"
+  - name: "RP6month"
+    query: "q=CREATE RETENTION POLICY RP6month ON monitoring DURATION 24w REPLICATION 1"
 
 # Continuous Queries Requests
 
 continuous_queries: 
-  - name: "CQ1"
-    query: "q=CREATE CONTINUOUS QUERY CQ10sTo1min on monitoring RESAMPLE EVERY 10m FOR 10m BEGIN SELECT mean(*) INTO RP6hour.:MEASUREMENT FROM /.*/ GROUP BY time(1m), * END"
-  - name: "CQ2"
-    query: "q=CREATE CONTINUOUS QUERY CQ1minTo10min on monitoring RESAMPLE EVERY 30m FOR 30m BEGIN SELECT mean(*) INTO RP10hour.:MEASUREMENT FROM RP6hour./.*/ GROUP BY time(10m), * END"
+  - name: "RP1toRP3"
+    query: "q=CREATE CONTINUOUS QUERY RP1toRP2 on monitoring RESAMPLE EVERY 1h FOR 1h BEGIN SELECT mean(*) INTO RP3month.:MEASUREMENT FROM /.*/ GROUP BY time(1m), * END"
+  - name: "RP3toRP6"
+    query: "q=CREATE CONTINUOUS QUERY RP2toRP3 on monitoring RESAMPLE EVERY 2h FOR 2h BEGIN SELECT mean(*) INTO RP6month.:MEASUREMENT FROM RP3month./.*/ GROUP BY time(10m), * END"

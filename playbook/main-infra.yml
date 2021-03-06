@@ -70,3 +70,19 @@
   tags:
     - grafana
     - grafana::setup
+
+- hosts: grafana
+  become: true
+  tasks:
+    - name: Install Grafana clock plugin
+      community.grafana.grafana_plugin:
+        name: grafana-clock-panel
+        version: latest
+        state: present
+    - name: Restart Grafana
+      ansible.builtin.service:
+        name: grafana-server
+        state: restarted
+      tags:
+      - grafana
+      - grafana::plugin
