@@ -1,14 +1,12 @@
 ---
 # ANSIBLE INSTALL
 # doc: https://github.com/geerlingguy/ansible-role-ansible
-- hosts: ansible
+- hosts: all
   become: true
   tasks: 
     - name: Run the equivalent of "apt-get update" as a separate step
       apt:
         update_cache: yes
-  tags:
-    - ansible
 
 - hosts: ansible
   become: true
@@ -70,19 +68,3 @@
   tags:
     - grafana
     - grafana::setup
-
-- hosts: grafana
-  become: true
-  tasks:
-    - name: Install Grafana clock plugin
-      community.grafana.grafana_plugin:
-        name: grafana-clock-panel
-        version: latest
-        state: present
-    - name: Restart Grafana
-      ansible.builtin.service:
-        name: grafana-server
-        state: restarted
-      tags:
-      - grafana
-      - grafana::plugin

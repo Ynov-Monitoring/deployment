@@ -6,7 +6,6 @@
     body_format: "form-urlencoded"
     body: "{{ item.query }}"
   with_items: "{{ retention_policies }}"
-  register: response
 
 - name: Création Continuous Query 
   uri:
@@ -15,8 +14,3 @@
     body_format: "form-urlencoded"
     body: "{{ item.query }}"
   with_items: "{{ continuous_queries }}"
-  register: response2
-  
-# - name: "Debug"
-#   debug:
-#     var: response2
