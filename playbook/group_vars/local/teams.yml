@@ -1,0 +1,17 @@
+---
+teams:
+  - project: Project Test Local
+    email: text@example.com
+    user: local_test
+    password: very_secret
+    project_tag: "project_local_test"
+    dashboard:
+      - name: "System"
+
+  - project: Project Test Local 2
+    email: text2@example.com
+    user: local_test2
+    password: very_secret2
+    node_tag: "project_local2"
+    dashboard:
+      - name: "System"

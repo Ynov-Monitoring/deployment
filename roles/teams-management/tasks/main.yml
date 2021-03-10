@@ -1,0 +1,5 @@
+---
+
+- name: loop over teams for create User / Folder / dashboard 
+  include_tasks: single-team-configuration.yml
+  loop: "{{ teams }}"

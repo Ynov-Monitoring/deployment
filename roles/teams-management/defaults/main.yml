@@ -1,0 +1,12 @@
+---
+grafana_ip: 127.0.0.1
+grafana_expose_port: 3000
+
+teams:
+  - project: FOO
+    email: text@example.com
+    user: FOO
+    password: FOO
+    node_tag: FOO
+    dashboard:
+      - name: FOO
