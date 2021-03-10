@@ -57,6 +57,7 @@ influxdb_ip: !vault |
           6633386530353161640a363238623338666166643432653865623433326630643637306431616631
           3839
 
+
 telegraf_agent_output:
   - type: influxdb
     config:
