@@ -13,7 +13,3 @@ roles:
  
     - name: manala.grafana
       version: 2.0.2
-  
-collections:
-    - name: community.grafana
-      version: 1.2.0
