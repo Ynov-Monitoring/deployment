@@ -1,7 +1,7 @@
 ---
 # ANSIBLE INSTALL
 # doc: https://github.com/geerlingguy/ansible-role-ansible
-- hosts: ansible
+- hosts: all
   become: true
   tasks: 
     - name: Run the equivalent of "apt-get update" as a separate step
@@ -38,6 +38,7 @@
   become: true
   roles: 
     - manala.influxdb
+    - influxDB-retention-policy
   tags:
     - influxdb
     - influxdb::install

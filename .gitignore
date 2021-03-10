@@ -1,4 +1,4 @@
 *.retry
 roles/*.*
 .vagrant/
-pass.vault
+*.vault
