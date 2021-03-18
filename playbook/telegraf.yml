@@ -1,4 +1,8 @@
-- hosts: all:!main
+---
+# INSTALL TELEGRAF
+# doc: https://github.com/dj-wasabi/ansible-telegraf
+
+- hosts: all:!local
   become: true
   tasks:
     - name: Import InfluxDB GPG public key (DEBIAN)
