@@ -11,6 +11,27 @@ influxdb_grafana_user: "grafana"
 influxdb_grafana_pass: "very_secret"
 influxdb_ip: "{{ groups['influxdb'] | map('extract', hostvars, ['ansible_ssh_host']) | join(':8086\",\"http://') }}"
 
+URLQuery: "http://localhost:8086/query?db={{ influxdb_monitoring_db }}&"
+
+# Retention Policy Requests
+
+retention_policies: 
+  - name: "RP1month"
+    query: "q=CREATE RETENTION POLICY RP1month ON {{ influxdb_monitoring_db }} DURATION 1h REPLICATION 1 DEFAULT"
+  - name: "RP3month"
+    query: "q=CREATE RETENTION POLICY RP3month ON {{ influxdb_monitoring_db }} DURATION 2h REPLICATION 1"
+  - name: "RP6month"
+    query: "q=CREATE RETENTION POLICY RP6month ON {{ influxdb_monitoring_db }} DURATION 3h REPLICATION 1"
+
+# Continuous Queries Requests
+
+continuous_queries: 
+  - name: "RP1toRP3"
+    query: "q=CREATE CONTINUOUS QUERY RP1toRP2 on {{ influxdb_monitoring_db }} RESAMPLE EVERY 1h FOR 1h BEGIN SELECT mean(*) INTO RP3month.:MEASUREMENT FROM /.*/ GROUP BY time(1m), * END"
+  - name: "RP3toRP6"
+    query: "q=CREATE CONTINUOUS QUERY RP2toRP3 on {{ influxdb_monitoring_db }} RESAMPLE EVERY 2h FOR 2h BEGIN SELECT mean(*) INTO RP6month.:MEASUREMENT FROM RP3month./.*/ GROUP BY time(10m), * END"
+
+
 ############
 # TELEGRAF #
 ############
