@@ -12,7 +12,7 @@
 
     - name: Add InfluxDB repo 
       apt_repository: 
-        repo: deb https://repos.influxdata.com/ubuntu focal stable
+        repo: "deb https://repos.influxdata.com/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['distribution_release'] | lower}} stable"
         state: present
         filename: influxdb
 
