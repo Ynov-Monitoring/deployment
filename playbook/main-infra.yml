@@ -1,12 +1,23 @@
 ---
-# ANSIBLE INSTALL
-# doc: https://github.com/geerlingguy/ansible-role-ansible
+# UPDATE & IMPORT INFLUXDB KEY
 - hosts: all
   become: true
   tasks: 
     - name: Run the equivalent of "apt-get update" as a separate step
       apt:
         update_cache: yes
+
+    - name: Import InfluxDB GPG public key 
+      apt_key: url=https://repos.influxdata.com/influxdb.key state=present
+
+    - name: Add InfluxDB repo 
+      apt_repository: 
+        repo: "deb https://repos.influxdata.com/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['distribution_release'] | lower}} stable"
+        state: present
+        filename: influxdb
+
+# ANSIBLE INSTALL
+# doc: https://github.com/geerlingguy/ansible-role-ansible
 
 - hosts: ansible
   become: true
@@ -19,20 +30,8 @@
     - ansible
     - ansible::install
 
-- hosts: main
-  become: true
-  tasks:
-    - name: Import InfluxDB GPG public key 
-      apt_key: url=https://repos.influxdata.com/influxdb.key state=present
-
-    - name: Add InfluxDB repo 
-      apt_repository: 
-        repo: deb https://repos.influxdata.com/ubuntu bionic stable
-        state: present
-        filename: influxdb
-  tags:
-    - influxdb
-    - influxdb::install
+# INSTALL INFLUXDB   
+# doc: https://github.com/manala/ansible-role-influxdb
 
 - hosts: influxdb
   become: true
@@ -43,8 +42,13 @@
     - influxdb
     - influxdb::install
     - influxdb::config
+
+# INSTALL TELEGRAF
     
 - import_playbook: telegraf.yml
+
+# INSTALL GRAFANA
+# doc: https://github.com/manala/ansible-role-grafana
 
 - hosts: grafana
   become: true
