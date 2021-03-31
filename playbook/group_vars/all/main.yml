@@ -76,3 +76,5 @@ telegraf_plugins_default:
   - plugin: processes
   - plugin: swap
 
+grafana_plugins:
+  - grafana-clock-panel
