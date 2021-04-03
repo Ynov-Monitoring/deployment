@@ -1,4 +1,5 @@
 ---
+
 # UPDATE & IMPORT INFLUXDB KEY
 - hosts: all
   become: true
@@ -6,11 +7,11 @@
     - name: Set timezone to Europe/Paris
       timezone:
         name: Europe/Paris
-
+        
     - name: Run the equivalent of "apt-get update" as a separate step
       apt:
         update_cache: yes
-
+        
     - name: Import InfluxDB GPG public key 
       apt_key: url=https://repos.influxdata.com/influxdb.key state=present
 
@@ -33,9 +34,6 @@
   tags:
     - ansible
     - ansible::install
-
-# INSTALL INFLUXDB   
-# doc: https://github.com/manala/ansible-role-influxdb
 
 - hosts: influxdb
   become: true
@@ -86,5 +84,3 @@
   tags:
     - grafana
     - grafana::setup
-
-#- import_playbook: manage-access.yml

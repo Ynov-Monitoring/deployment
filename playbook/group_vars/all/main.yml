@@ -28,6 +28,7 @@ influxdb_telegraf_pass: !vault |
   3066656163666261330a333662653835616535353162323535326463346365303265316635303936
   61356131663535346261303338643333303233616637656234333962376361323138
 
+
 ############
 # TELEGRAF #
 ############
@@ -57,7 +58,6 @@ influxdb_ip: !vault |
           6633386530353161640a363238623338666166643432653865623433326630643637306431616631
           3839
 
-
 telegraf_agent_output:
   - type: influxdb
     config:
@@ -78,3 +78,4 @@ telegraf_plugins_default:
 
 grafana_plugins:
   - grafana-clock-panel
+

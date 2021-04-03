@@ -1,0 +1,111 @@
+project_tag: devops-monitoring
+
+influxdb_ip: "{{ groups['influxdb'] | map('extract', hostvars, ['ansible_ssh_host']) | join(':8086\",\"http://') }}"
+influxdb_grafana_user: !vault |
+                       $ANSIBLE_VAULT;1.1;AES256
+                       39663333373864633933336662636330306364356330343439623235396331343535643339326166
+                       6438316232366538353632333332616533333432653263380a623033633634376335653862656239
+                       65383566643138303638623434623333303565643334663762343764383639396566623630363430
+                       6235613637616639310a376464313035373636366436336665363365656438336439646262303836
+                       3438
+
+influxdb_grafana_pass: !vault |
+                       $ANSIBLE_VAULT;1.1;AES256
+                       66656237383566316565626562393730613363663561313332663066313030643236343363346363
+                       3764343935376330616330376230616263393430383534650a623034636134323534656139313236
+                       65376630396362303037366564396435623563623565333133613362353032343432653134313534
+                       3437353839643566620a656266646362373134323166316363626232333637346134616161666266
+                       33383737383630333763353533346336613762623437643336646233373038303464
+
+######################
+#      ANSIBLE       #
+######################
+pip_package: python3-pip
+pip_executable: pip3
+pip_install_packages:
+  - name: setuptools
+    state: latest
+ansible_install_method: pip
+
+############
+# InfluxDB #
+############
+# doc : https://github.com/manala/ansible-role-influxdb
+manala_influxdb_databases:
+  - "{{ influxdb_monitoring_db }}"
+
+manala_influxdb_users:
+  - database: "{{ influxdb_monitoring_db }}"
+    name: "{{ influxdb_telegraf_user }}"
+    password: "{{ influxdb_telegraf_pass }}"
+
+  - database: "{{ influxdb_monitoring_db }}"
+    name: "{{ influxdb_grafana_user }}"
+    password: "{{ influxdb_grafana_pass }}"
+
+manala_influxdb_privileges:
+  - database: "{{ influxdb_monitoring_db }}"
+    user: "{{ influxdb_telegraf_user }}"
+    grant: write
+
+  - database: "{{ influxdb_monitoring_db }}"
+    user: "{{ influxdb_grafana_user }}"
+    grant: read
+
+manala_influxdb_dir:
+  - /var/lib/influxdb/meta
+  - /var/lib/influxdb/data
+  - /var/lib/influxdb/wal
+
+manala_influxdb_config:
+  - reporting-disabled: true
+  - meta:
+    - dir: /var/lib/influxdb/meta
+  - data:
+    - dir: /var/lib/influxdb/data
+    - wal-dir: /var/lib/influxdb/wal
+  - udp:
+    - enabled: false
+
+#############
+#  Grafana  #
+#############
+
+grafana_admin: !vault |
+               $ANSIBLE_VAULT;1.1;AES256
+               63353239373137336238303636343934333637653264373366373461333732623836383732376135
+               3662663437623066353131663666306462363061393131640a363565346365313466303730653265
+               62376535396237656635643135656663306331343862353662633135316639336463616164393961
+               3462366166653735610a313162623831616338633634653932646439613665363966366339623864
+               62353133393131363562303732633435303961623961663261386562383339333439
+
+grafana_admin_pass: !vault |
+                    $ANSIBLE_VAULT;1.1;AES256
+                    39356137333739623039346531306365626361646661376162633637656661363761666333396631
+                    6566666136396665656564386439333330356333646637620a353731643337306361393937396335
+                    63396533366631356132353337656130386264383930613133386537366362303364356137343966
+                    3961623730313336640a373433323166653936623038383437663963666236623437396166333737
+                    61393165326132623535366433363463396264313539633131656131626434383134
+
+manala_grafana_config:
+  - app_mode: production
+  - server:
+      - http_port: 3000
+  - security:
+      - admin_user: "{{ grafana_admin }}"
+      - admin_password: "{{ grafana_admin_pass }}"
+
+manala_grafana_api_url: http://127.0.0.1:3000
+manala_grafana_api_user: "{{ grafana_admin }}"
+manala_grafana_api_password: "{{ grafana_admin_pass }}"
+
+manala_grafana_datasources:
+  - name:      telegraf
+    type:      influxdb
+    isDefault: true
+    access:    server
+    basicAuth: false
+    url:       "http://{{ influxdb_ip }}:8086"
+    database:  "{{ influxdb_monitoring_db }}"
+    username:  "{{ influxdb_grafana_user }}"
+    password:  "{{ influxdb_grafana_pass }}"
