@@ -77,7 +77,7 @@ URLQuery: "http://localhost:8086/query?db={{ influxdb_monitoring_db }}&"
 
 # Retention Policy Requests
 
-retention_policies: 
+retention_policies:
   - name: "RP1month"
     query: "q=CREATE RETENTION POLICY RP1month ON {{ influxdb_monitoring_db }} DURATION 4w REPLICATION 1 DEFAULT"
   - name: "RP3month"
@@ -87,7 +87,7 @@ retention_policies:
 
 # Continuous Queries Requests
 
-continuous_queries: 
+continuous_queries:
   - name: "RP1toRP3"
     query: "q=CREATE CONTINUOUS QUERY RP1toRP2 on {{ influxdb_monitoring_db }} RESAMPLE EVERY 1h FOR 1h BEGIN SELECT mean(*) INTO RP3month.:MEASUREMENT FROM /.*/ GROUP BY time(1m), * END"
   - name: "RP3toRP6"
@@ -119,6 +119,7 @@ grafana_expose_port: 3000
 manala_grafana_config:
   - app_mode: production
   - server:
+      - domain: monitoring.ydayslyon.fr
       - http_port: "{{ grafana_expose_port }}"
   - security:
       - admin_user: "{{ grafana_admin }}"
