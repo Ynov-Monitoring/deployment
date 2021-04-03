@@ -2,3 +2,4 @@
 roles/*.*
 .vagrant/
 *.vault
+playbook/out/*.json

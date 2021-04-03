@@ -3,6 +3,8 @@
   set_fact: 
     team: "{{ item }}"
 
+## CREATE USER
+
 - name: Create user for team "{{ team.project }}"
   uri:
     url: "http://{{ grafana_ip }}:{{ grafana_expose_port }}/api/admin/users"
@@ -23,6 +25,8 @@
   failed_when: api_user_result.status not in [200, 412]
   changed_when: api_user_result.status == 200
 
+## GET USER ID
+
 - name: Get "{{ team.user }}" id
   uri:
     url: "http://{{ grafana_ip }}:{{ grafana_expose_port }}/api/users/lookup?loginOrEmail={{ team.user }}"
@@ -32,6 +36,8 @@
     force_basic_auth: yes
   register: api_user_result
   failed_when: api_user_result.status != 200
+
+## CREATE TEAM
 
 - name: Create team named {{ team.project }}
   uri: 
@@ -50,6 +56,8 @@
   failed_when: api_team_result.status not in [200, 409]
   changed_when: api_team_result.status == 200
 
+## GET TEAM ID
+
 - name: Get {{ team.project }} id
   uri: 
     url: "http://{{ grafana_ip }}:{{ grafana_expose_port }}/api/teams/search?name={{ team.project | replace(' ', '%20') }}"
@@ -59,6 +67,8 @@
     force_basic_auth: yes
   register: api_team_result
   failed_when: api_team_result.status != 200
+
+## ADD USER IN TEAM
 
 - name: Add {{ team.user }} to team {{ team.project }}
   uri: 
@@ -77,6 +87,8 @@
   failed_when: api_addUserToTeam_result.status not in [200, 400]
   changed_when: api_addUserToTeam_result.status == 200
 
+## CREATE FOLDER
+
 - name: Create folder
   uri:
     url: "http://{{ grafana_ip }}:{{ grafana_expose_port }}/api/folders"
@@ -92,8 +104,23 @@
     force_basic_auth: yes
     body_format: json
   register: api_folder_result
-  failed_when: api_folder_result.status not in [200, 412, 400] # A vérifier 
+  failed_when: api_folder_result.status not in [200, 412] # A vérifier 
   changed_when: api_folder_result.status == 200
+
+## GET FOLDER ID
+
+- name: Get folder id
+  uri:
+    url: "http://{{ grafana_ip }}:{{ grafana_expose_port }}/api/folders/{{ team.project | lower | replace(' ', '_') }}"
+    user: "{{ grafana_admin }}"
+    password: "{{ grafana_admin_pass }}"
+    method: GET
+    force_basic_auth: yes
+    body_format: json
+  register: api_folder_id_result
+  failed_when: api_folder_id_result.status not in [200, 412] # A vérifier 
+
+## CONFIGURE ACL FOR FOLDER
 
 - name: Configuration folder ACL
   uri: 
@@ -117,3 +144,100 @@
   register: api_folder_perm_result
   failed_when: api_folder_perm_result.status != 200
   changed_when: api_folder_perm_result.status == 200
+
+## CREATE ALERT EMAIL CHANNEL BY TEAM
+
+- name: Create email notification channel
+  uri: 
+    url: "http://{{ grafana_ip }}:{{ grafana_expose_port }}/api/alert-notifications"
+    user: "{{ grafana_admin }}"
+    password: "{{ grafana_admin_pass }}"
+    method: POST
+    body: >
+      {
+        "uid": "channel_email_{{ api_team_result.json.teams[0].id }}",
+        "name": "[EMAIL] {{ team.project }}",
+        "type":  "email",
+        "isDefault": false,
+        "sendReminder": false,
+        "settings": {
+          "addresses": ["{{ alert.addresses | join(",") }}"]
+        }
+      }
+
+    force_basic_auth: yes
+    body_format: json
+  when: alert.type == "email"
+  register: api_create_alert_result
+  failed_when: api_create_alert_result.status not in [200, 409]
+  changed_when: api_create_alert_result.status == 200
+  with_items: "{{ team.alert }}"
+  loop_control:
+    loop_var: alert
+  
+
+## CREATE ALERT DISCORD CHANNEL BY TEAM
+
+- name: Create discord notification channel
+  uri: 
+    url: "http://{{ grafana_ip }}:{{ grafana_expose_port }}/api/alert-notifications"
+    user: "{{ grafana_admin }}"
+    password: "{{ grafana_admin_pass }}"
+    method: POST
+    body: >
+      {
+        "uid": "channel_discord_{{ api_team_result.json.teams[0].id }}",
+        "name": "[DISCORD] {{ team.project }}",
+        "type":  "discord",
+        "isDefault": false,
+        "sendReminder": false,
+        "settings": {
+          "url": "{{ alert.url }}"
+        }
+      }
+
+    force_basic_auth: yes
+    body_format: json
+  when: alert.type == "discord"
+  register: api_create_alert_result
+  failed_when: api_create_alert_result.status not in [200, 409]
+  changed_when: api_create_alert_result.status == 200
+  with_items: "{{ team.alert }}"
+  loop_control:
+    loop_var: alert
+
+## GENERATE DASHBOARD
+- name: Generate a json dashboard with a j2 template
+  template:
+    src: templates/dashboard/dashboard_template_v1.json.j2
+    dest: out/dashboard_{{ team.project_tag }}.json
+  delegate_to: localhost
+  become: false
+
+## IMPORT DASHBOARD
+- name: Import dashboard
+  uri: 
+    url: "http://{{ grafana_ip }}:{{ grafana_expose_port }}/api/dashboards/db"
+    user: "{{ grafana_admin }}"
+    password: "{{ grafana_admin_pass }}"
+    method: POST
+    body: >
+      {
+        "dashboard": {{ lookup("file", 'out/dashboard_{{ team.project_tag }}.json') }},
+        "overwrite": true,
+        "folderId": {{ api_folder_id_result.json.id }},
+        "message": "Updated by ansible"
+      }
+
+    force_basic_auth: yes
+    body_format: json
+  register: api_import_dashboard_result
+  failed_when: api_import_dashboard_result.status == 500
+  changed_when: api_import_dashboard_result.status == 200
+
+## RESTART GRAFANA SERVER
+
+- name: grafana restart
+  service:
+    name: grafana-server
+    state: restarted
