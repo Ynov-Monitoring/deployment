@@ -1,0 +1,16 @@
+centos.local        ansible_ssh_host=192.168.50.34     ansible_ssh_user=vagrant     ansible_ssh_password=vagrant
+debian.local        ansible_ssh_host=192.168.50.35     ansible_ssh_user=vagrant     ansible_ssh_password=vagrant
+ubuntu.local        ansible_ssh_host=192.168.50.36     ansible_ssh_user=vagrant     ansible_ssh_password=vagrant
+influxdb.local      ansible_ssh_host=192.168.50.32     ansible_ssh_user=vagrant     ansible_ssh_password=vagrant
+
+[local:children]
+client_local
+influxdb
+
+[client_local]
+centos.local
+debian.local
+ubuntu.local
+
+[influxdb]
+influxdb.local

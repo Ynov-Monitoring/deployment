@@ -1,15 +1,79 @@
-project_tag: project_local
+project_tag: local_monitoring
 
+############
+# INFLUXDB #
+############
 influxdb_monitoring_db: "monitoring"
 influxdb_telegraf_user: "telegraf_probe"
 influxdb_telegraf_pass: "very_secret"
 
 influxdb_grafana_user: "grafana"
 influxdb_grafana_pass: "very_secret"
+influxdb_ip: "{{ groups['influxdb'] | map('extract', hostvars, ['ansible_ssh_host']) | join(':8086\",\"http://') }}"
 
+URLQuery: "http://localhost:8086/query?db={{ influxdb_monitoring_db }}&"
+
+# Retention Policy Requests
+
+retention_policies: 
+  - name: "RP1month"
+    query: "q=CREATE RETENTION POLICY RP1month ON {{ influxdb_monitoring_db }} DURATION 1h REPLICATION 1 DEFAULT"
+  - name: "RP3month"
+    query: "q=CREATE RETENTION POLICY RP3month ON {{ influxdb_monitoring_db }} DURATION 2h REPLICATION 1"
+  - name: "RP6month"
+    query: "q=CREATE RETENTION POLICY RP6month ON {{ influxdb_monitoring_db }} DURATION 3h REPLICATION 1"
+
+# Continuous Queries Requests
+
+continuous_queries: 
+  - name: "RP1toRP3"
+    query: "q=CREATE CONTINUOUS QUERY RP1toRP2 on {{ influxdb_monitoring_db }} RESAMPLE EVERY 1h FOR 1h BEGIN SELECT mean(*) INTO RP3month.:MEASUREMENT FROM /.*/ GROUP BY time(1m), * END"
+  - name: "RP3toRP6"
+    query: "q=CREATE CONTINUOUS QUERY RP2toRP3 on {{ influxdb_monitoring_db }} RESAMPLE EVERY 2h FOR 2h BEGIN SELECT mean(*) INTO RP6month.:MEASUREMENT FROM RP3month./.*/ GROUP BY time(10m), * END"
+
+
+############
+# TELEGRAF #
+############
+
+telegraf_agent_output:
+  - type: influxdb
+    config:
+      - urls = ["http://{{ influxdb_ip }}:8086"]
+      - database = "{{ influxdb_monitoring_db }}"
+      - username = "{{ influxdb_telegraf_user }}"
+      - password = "{{ influxdb_telegraf_pass }}"
+
+############
+# GRAFANA  #
+############
+
+grafana_ip: "{{ groups['grafana'] | map('extract', hostvars, ['ansible_ssh_host'])  | first }}"
 grafana_admin: admin
 grafana_admin_pass: adminpass
-grafana_api_usr: api_usr
-grafana_api_pwd: api_usr_pwd
 
-influxdb_ip: 192.168.50.32
+grafana_expose_port: 3000
+
+manala_grafana_config:
+  - app_mode: production
+  - server:
+      - http_port: "{{ grafana_expose_port }}"
+  - security:
+      - admin_user: "{{ grafana_admin }}"
+      - admin_password: "{{ grafana_admin_pass }}"
+
+manala_grafana_api_url: "http://127.0.0.1:{{ grafana_expose_port }}"
+manala_grafana_api_user: "{{ grafana_admin }}"
+manala_grafana_api_password: "{{ grafana_admin_pass }}"
+
+manala_grafana_datasources:
+  - name:      telegraf
+    type:      influxdb
+    isDefault: true
+    access:    server
+    basicAuth: false
+    url:       "http://{{ influxdb_ip }}:8086"
+    database:  "{{ influxdb_monitoring_db }}"
+    username:  "{{ influxdb_grafana_user }}"
+    password:  "{{ influxdb_grafana_pass }}"
+

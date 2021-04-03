@@ -1,0 +1,16 @@
+# Politique de retention de données
+- name: Création Retention Policy 
+  uri:
+    url: "{{ URLQuery }}"
+    method: POST
+    body_format: "form-urlencoded"
+    body: "{{ item.query }}"
+  with_items: "{{ retention_policies }}"
+
+- name: Création Continuous Query 
+  uri:
+    url: "{{ URLQuery }}"
+    method: POST
+    body_format: "form-urlencoded"
+    body: "{{ item.query }}"
+  with_items: "{{ continuous_queries }}"

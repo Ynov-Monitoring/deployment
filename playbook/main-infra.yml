@@ -1,12 +1,28 @@
 ---
-# ANSIBLE INSTALL
-# doc: https://github.com/geerlingguy/ansible-role-ansible
-- hosts: ansible
+
+# UPDATE & IMPORT INFLUXDB KEY
+- hosts: all
   become: true
   tasks: 
+    - name: Set timezone to Europe/Paris
+      timezone:
+        name: Europe/Paris
+        
     - name: Run the equivalent of "apt-get update" as a separate step
       apt:
         update_cache: yes
+        
+    - name: Import InfluxDB GPG public key 
+      apt_key: url=https://repos.influxdata.com/influxdb.key state=present
+
+    - name: Add InfluxDB repo 
+      apt_repository: 
+        repo: "deb https://repos.influxdata.com/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['distribution_release'] | lower}} stable"
+        state: present
+        filename: influxdb
+
+# ANSIBLE INSTALL
+# doc: https://github.com/geerlingguy/ansible-role-ansible
 
 - hosts: ansible
   become: true
@@ -19,31 +35,22 @@
     - ansible
     - ansible::install
 
-- hosts: main
-  become: true
-  tasks:
-    - name: Import InfluxDB GPG public key 
-      apt_key: url=https://repos.influxdata.com/influxdb.key state=present
-
-    - name: Add InfluxDB repo 
-      apt_repository: 
-        repo: deb https://repos.influxdata.com/ubuntu bionic stable
-        state: present
-        filename: influxdb
-  tags:
-    - influxdb
-    - influxdb::install
-
 - hosts: influxdb
   become: true
   roles: 
     - manala.influxdb
+    - influxDB-retention-policy
   tags:
     - influxdb
     - influxdb::install
     - influxdb::config
+
+# INSTALL TELEGRAF
     
 - import_playbook: telegraf.yml
+
+# INSTALL GRAFANA
+# doc: https://github.com/manala/ansible-role-grafana
 
 - hosts: grafana
   become: true
@@ -64,6 +71,16 @@
   become: true
   roles:
     - manala.grafana
+  tasks:
+    - name: Install plugins
+      command: grafana-cli plugins install "{{ item }}"
+      with_items: "{{ grafana_plugins }}"
+    
+    - name: grafana restart
+      service:
+        name: grafana-server
+        state: restarted
+
   tags:
     - grafana
     - grafana::setup
